@@ -1,0 +1,162 @@
+CREATE TABLE IF NOT EXISTS `StarCafeDB`.`Cliente` (
+  `clienteID` INT NOT NULL,
+  `nome` VARCHAR(45) NOT NULL,
+  `dataCadastro` DATETIME NULL,
+  `email` VARCHAR(45) NOT NULL,
+  `endereco` VARCHAR(45) NOT NULL,
+  `telefone` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`clienteID`),
+  UNIQUE INDEX `email_UNIQUE` (`email` ASC) VISIBLE,
+  UNIQUE INDEX `clienteID_UNIQUE` (`clienteID` ASC) VISIBLE)
+ENGINE = InnoDB
+
+CREATE TABLE IF NOT EXISTS `StarCafeDB`.`Pedido` (
+  `pedidoID` INT NOT NULL,
+  `clienteID` INT NOT NULL,
+  `total` DECIMAL(8,2) NOT NULL,
+  `status` VARCHAR(45) NOT NULL,
+  `dataPedido` DATETIME NOT NULL,
+  `Cliente_clienteID` INT NOT NULL,
+  `Pagamento_pagamentoID` INT NOT NULL,
+  `Carrinho_carrinhoID` INT NOT NULL,
+  PRIMARY KEY (`pedidoID`, `Cliente_clienteID`, `Pagamento_pagamentoID`, `Carrinho_carrinhoID`, `clienteID`),
+  INDEX `fk_Pedido_Cliente_idx` (`Cliente_clienteID` ASC) VISIBLE,
+  INDEX `fk_Pedido_Pagamento1_idx` (`Pagamento_pagamentoID` ASC) VISIBLE,
+  INDEX `fk_Pedido_Carrinho1_idx` (`Carrinho_carrinhoID` ASC) VISIBLE,
+  UNIQUE INDEX `clienteID_UNIQUE` (`clienteID` ASC) VISIBLE,
+  UNIQUE INDEX `pedidoID_UNIQUE` (`pedidoID` ASC) VISIBLE,
+  UNIQUE INDEX `Pagamento_pagamentoID_UNIQUE` (`Pagamento_pagamentoID` ASC) VISIBLE,
+  UNIQUE INDEX `Carrinho_carrinhoID_UNIQUE` (`Carrinho_carrinhoID` ASC) VISIBLE,
+  CONSTRAINT `fk_Pedido_Cliente`
+    FOREIGN KEY (`Cliente_clienteID`)
+    REFERENCES `StarCafeDB`.`Cliente` (`clienteID`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Pedido_Pagamento1`
+    FOREIGN KEY (`Pagamento_pagamentoID`)
+    REFERENCES `StarCafeDB`.`Pagamento` (`pagamentoID`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Pedido_Carrinho1`
+    FOREIGN KEY (`Carrinho_carrinhoID`)
+    REFERENCES `StarCafeDB`.`Carrinho` (`carrinhoID`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+
+CREATE TABLE IF NOT EXISTS `StarCafeDB`.`Produto` (
+  `produtoID` INT NOT NULL,
+  `nomeProduto` VARCHAR(45) NOT NULL,
+  `desricao` VARCHAR(45) NOT NULL,
+  `estoque` BINARY(1) NOT NULL,
+  `preco` DECIMAL(8,2) NOT NULL,
+  `categoria` VARCHAR(45) NULL,
+  PRIMARY KEY (`produtoID`),
+  UNIQUE INDEX `produtoID_UNIQUE` (`produtoID` ASC) VISIBLE)
+ENGINE = InnoDB
+
+CREATE TABLE IF NOT EXISTS `StarCafeDB`.`Pedido_has_Produto` (
+  `Pedido_pedidoID` INT NOT NULL,
+  `Pedido_Cliente_clienteID` INT NOT NULL,
+  `Pedido_Pagamento_pagamentoID` INT NOT NULL,
+  `Produto_produtoID` INT NOT NULL,
+  PRIMARY KEY (`Pedido_pedidoID`, `Pedido_Cliente_clienteID`, `Pedido_Pagamento_pagamentoID`, `Produto_produtoID`),
+  INDEX `fk_Pedido_has_Produto_Produto1_idx` (`Produto_produtoID` ASC) VISIBLE,
+  INDEX `fk_Pedido_has_Produto_Pedido1_idx` (`Pedido_pedidoID` ASC, `Pedido_Cliente_clienteID` ASC, `Pedido_Pagamento_pagamentoID` ASC) VISIBLE,
+  UNIQUE INDEX `Pedido_pedidoID_UNIQUE` (`Pedido_pedidoID` ASC) VISIBLE,
+  UNIQUE INDEX `Pedido_Cliente_clienteID_UNIQUE` (`Pedido_Cliente_clienteID` ASC) VISIBLE,
+  UNIQUE INDEX `Pedido_Pagamento_pagamentoID_UNIQUE` (`Pedido_Pagamento_pagamentoID` ASC) VISIBLE,
+  UNIQUE INDEX `Produto_produtoID_UNIQUE` (`Produto_produtoID` ASC) VISIBLE,
+  CONSTRAINT `fk_Pedido_has_Produto_Pedido1`
+    FOREIGN KEY (`Pedido_pedidoID` , `Pedido_Cliente_clienteID` , `Pedido_Pagamento_pagamentoID`)
+    REFERENCES `StarCafeDB`.`Pedido` (`pedidoID` , `Cliente_clienteID` , `Pagamento_pagamentoID`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Pedido_has_Produto_Produto1`
+    FOREIGN KEY (`Produto_produtoID`)
+    REFERENCES `StarCafeDB`.`Produto` (`produtoID`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+
+CREATE TABLE IF NOT EXISTS `StarCafeDB`.`Carrinho` (
+  `carrinhoID` INT NOT NULL,
+  `clienteID` INT NOT NULL,
+  `produtoID` INT NOT NULL,
+  `dataAdicao` DATETIME NOT NULL,
+  `quantidade` INT NOT NULL,
+  PRIMARY KEY (`carrinhoID`, `produtoID`, `clienteID`),
+  UNIQUE INDEX `carrinhoID_UNIQUE` (`carrinhoID` ASC) VISIBLE,
+  UNIQUE INDEX `clienteID_UNIQUE` (`clienteID` ASC) VISIBLE,
+  UNIQUE INDEX `produtoID_UNIQUE` (`produtoID` ASC) VISIBLE)
+ENGINE = InnoDB
+
+CREATE TABLE IF NOT EXISTS `StarCafeDB`.`Produto_has_Carrinho` (
+  `Produto_produtoID` INT NOT NULL,
+  `Carrinho_carrinhoID` INT NOT NULL,
+  PRIMARY KEY (`Produto_produtoID`, `Carrinho_carrinhoID`),
+  INDEX `fk_Produto_has_Carrinho_Carrinho1_idx` (`Carrinho_carrinhoID` ASC) VISIBLE,
+  INDEX `fk_Produto_has_Carrinho_Produto1_idx` (`Produto_produtoID` ASC) VISIBLE,
+  UNIQUE INDEX `Produto_produtoID_UNIQUE` (`Produto_produtoID` ASC) VISIBLE,
+  UNIQUE INDEX `Carrinho_carrinhoID_UNIQUE` (`Carrinho_carrinhoID` ASC) VISIBLE,
+  CONSTRAINT `fk_Produto_has_Carrinho_Produto1`
+    FOREIGN KEY (`Produto_produtoID`)
+    REFERENCES `StarCafeDB`.`Produto` (`produtoID`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Produto_has_Carrinho_Carrinho1`
+    FOREIGN KEY (`Carrinho_carrinhoID`)
+    REFERENCES `StarCafeDB`.`Carrinho` (`carrinhoID`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+
+CREATE TABLE IF NOT EXISTS `StarCafeDB`.`Pagamento` (
+  `pagamentoID` INT NOT NULL,
+  `pedidoID` INT NOT NULL,
+  `statusPagamento` VARCHAR(45) NOT NULL,
+  `metodo` VARCHAR(45) NOT NULL,
+  `dataPagamento` DATETIME NOT NULL,
+  `valorPago` DECIMAL(8,2) NOT NULL,
+  `Sistema_sistemaID` INT NOT NULL,
+  `Admin_adminID` INT NOT NULL,
+  PRIMARY KEY (`pagamentoID`, `Sistema_sistemaID`, `Admin_adminID`, `pedidoID`),
+  INDEX `fk_Pagamento_Sistema1_idx` (`Sistema_sistemaID` ASC) VISIBLE,
+  INDEX `fk_Pagamento_Admin1_idx` (`Admin_adminID` ASC) VISIBLE,
+  UNIQUE INDEX `pedidoID_UNIQUE` (`pedidoID` ASC) VISIBLE,
+  UNIQUE INDEX `pagamentoID_UNIQUE` (`pagamentoID` ASC) VISIBLE,
+  UNIQUE INDEX `Admin_adminID_UNIQUE` (`Admin_adminID` ASC) VISIBLE,
+  UNIQUE INDEX `Sistema_sistemaID_UNIQUE` (`Sistema_sistemaID` ASC) VISIBLE,
+  CONSTRAINT `fk_Pagamento_Sistema1`
+    FOREIGN KEY (`Sistema_sistemaID`)
+    REFERENCES `StarCafeDB`.`Sistema` (`sistemaID`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Pagamento_Admin1`
+    FOREIGN KEY (`Admin_adminID`)
+    REFERENCES `StarCafeDB`.`Admin` (`adminID`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+
+CREATE TABLE IF NOT EXISTS `StarCafeDB`.`Sistema` (
+  `sistemaID` INT NOT NULL,
+  `nomeSistema` VARCHAR(45) NOT NULL,
+  `versao` VARCHAR(45) NOT NULL,
+  `dataImplementacao` DATETIME NOT NULL,
+  `responsavel` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`sistemaID`),
+  UNIQUE INDEX `sistemaID_UNIQUE` (`sistemaID` ASC) VISIBLE)
+ENGINE = InnoDB
+
+CREATE TABLE IF NOT EXISTS `StarCafeDB`.`Admin` (
+  `adminID` INT NOT NULL,
+  `telefoneAdmin` VARCHAR(45) NOT NULL,
+  `cargo` VARCHAR(45) NOT NULL,
+  `nomeAdmin` VARCHAR(45) NOT NULL,
+  `emailAdmin` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`adminID`),
+  UNIQUE INDEX `emailAdmin_UNIQUE` (`emailAdmin` ASC) VISIBLE,
+  UNIQUE INDEX `telefoneAdmin_UNIQUE` (`telefoneAdmin` ASC) VISIBLE,
+  UNIQUE INDEX `adminID_UNIQUE` (`adminID` ASC) VISIBLE)
+ENGINE = InnoDB
