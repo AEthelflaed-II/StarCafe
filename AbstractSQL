@@ -1,0 +1,48 @@
+-- Use the newly created database
+USE star_cafe;
+
+-- Create the cupcakes table
+CREATE TABLE cupcakes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100),
+    flavor VARCHAR(100),
+    price DECIMAL(10, 2),
+    available INT
+);
+
+-- Create the bolos table
+CREATE TABLE bolos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    type VARCHAR(100),
+    size VARCHAR(50),
+    price DECIMAL(10, 2),
+    available INT
+);
+
+-- Create the bebidas table
+CREATE TABLE bebidas (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    size VARCHAR(50),
+    price DECIMAL(10, 2),
+    available INT
+);
+
+-- Insert sample data into cupcakes
+INSERT INTO cupcakes (name, flavor, price, available) VALUES
+('Vanilla Delight', 'Vanilla', 2.50, 20),
+('Chocolate Dream', 'Chocolate', 3.00, 15),
+('Red Velvet', 'Red Velvet', 3.50, 10);
+
+-- Insert sample data into bolos
+INSERT INTO bolos (type, size, price, available) VALUES
+('Espresso', 'Small', 2.00, 30),
+('Latte', 'Medium', 3.50, 25),
+('Cappuccino', 'Large', 4.00, 20);
+
+-- Insert sample data into bebidas
+INSERT INTO bebidas (size, price, available) VALUES
+('500ml', 1.00, 50),
+('1L', 1.50, 30);
+
+-- vamos verificar a nossa codificação
+-- projeto da: Tricia Grisi
